@@ -58,4 +58,15 @@ class Model
         $this->fields = $this->db->listFields($this->table);
         return $this->fields;
     }
+
+    public function createTable($table, $fields)
+    {
+        $sql = "CREATE TABLE IF NOT EXISTS $table (";
+        $fieldSql = [];
+        foreach ($fields as $field => $type) {
+            $fieldSql[] = "$field $type";
+        }
+        $sql .= implode(", ", $fieldSql) . ")";
+        return $this->db->query($sql);
+    }
 }
