@@ -21,6 +21,8 @@ class DatabaseFactory
                 return new Mysqli();
             case 'mssql':
                 return new Mssql();
+            case 'sqlite':
+                return new Mssql();
             default:
                 throw new \Exception("Unsupported database type: $dbType");
         }

@@ -67,8 +67,8 @@ class Mysql implements Database
             $sql .= " LIMIT $limit";
         }
         $this->query = $sql;
-        $this->results = $this->execute($sql);
-        return $this;
+        $this->execute($sql);
+        return $this->get();
     }
 
     public function get()

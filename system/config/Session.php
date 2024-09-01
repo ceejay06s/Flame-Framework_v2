@@ -21,9 +21,6 @@ class Session
         } else if (getenv('SESSION_DRIVER') == 'file') {
             session_save_path(getenv('SESSION_PATH') ?? APP_PATH . DS . 'tmp/sessions');
         }
-
-
-
         session_set_save_handler(
             function ($save_path, $session_name) {
                 return true;
@@ -35,7 +32,6 @@ class Session
                 $encrypt = new Encryption($_ENV['SESSION_KEY'], $_ENV['SESSION_SALT']);
                 if (getenv('SESSION_DRIVER') == 'database') {
                     $sessionData = $this->session->select($this->session->table, '*', "session_id = '$session_id'");
-
                     return $sessionData ? unserialize($encrypt->decrypt($sessionData[0]['data'])) : '';
                 } else if (getenv('SESSION_DRIVER') == 'file') {
                     return file_exists(session_save_path() . '/' . $session_id) ? unserialize($encrypt->decrypt(file_get_contents(session_save_path() . '/' . $session_id))) : '';

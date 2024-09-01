@@ -1,11 +1,16 @@
 <?php
+
+use System\Config\Session;
+
 class Router
 {
     public $controller;
     public $method;
     public $params;
+    public $Session;
     public function __construct()
     {
+        $this->Session = new Session;
         $route = $this->getRoute($_SERVER['REQUEST_URI']);
         $url = parse_url($_SERVER['REQUEST_URI']);
         $path = trim($url['path'], '/');
@@ -63,6 +68,16 @@ class Router
                 // Handle invalid controller
                 echo "Controller '$controllerClass' not found";
                 header('HTTP/1.1 302 Found');
+            }
+        }
+    }
+    public function blockAccess($roles = [])
+    {
+        if (!empty($roles)) {
+            $user = $this->Session->get('user');
+            if (!isset($user) || !in_array($user->role, $roles)) {
+                header('Location: ' . BASE_URL . '/login');
+                die();
             }
         }
     }
