@@ -45,6 +45,17 @@ class Sqlite implements Database
             return false;
         }
     }
+    public function createTable($table, $fields)
+    {
+        $sql = "CREATE TABLE IF NOT EXISTS $table (";
+        $fieldSql = [];
+        foreach ($fields as $field => $type) {
+            $fieldSql[] = "$field $type";
+        }
+        $sql .= implode(", ", $fieldSql) . ")";
+        $this->execute($sql);
+        return $this->results->rowCount();
+    }
 
     public function select($table, $columns = "*", $where = null, $orderBy = null, $limit = null)
     {
