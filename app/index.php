@@ -1,4 +1,6 @@
 <?php
+define('BASE_URL', $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . str_replace('/index.php', '', $_SERVER['PHP_SELF']));
+
 define('DS', DIRECTORY_SEPARATOR);
 define('ROOT_PATH', dirname(__DIR__));
 define('APP_PATH', ROOT_PATH . '/app');
@@ -43,11 +45,5 @@ $dotenv->load();
 foreach ($_ENV as $key => $value) {
     putenv("$key=$value");
 }
-
-
-
-
-$Session = new  System\Config\Session;
-
-
-$Router = new Router();
+$router = new Router;
+// $Router = new Router();

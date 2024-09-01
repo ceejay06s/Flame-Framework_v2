@@ -13,4 +13,5 @@ interface Database
     public function get();
     public function first();
     public function last();
+    public function checkTableExists($table);
 }

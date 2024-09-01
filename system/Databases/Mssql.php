@@ -10,6 +10,7 @@ class Mssql implements Database
     private $conn;
     private $results;
     private $fields;
+    public $table;
     private $query;
 
     public function __construct()
@@ -39,7 +40,8 @@ class Mssql implements Database
         $this->execute($sql, $params);
         return $this;
     }
-    public function execute($sql, $params = [])
+
+    private function execute($sql, $params = [])
     {
         try {
             $stmt = $this->conn->prepare($sql);
@@ -50,10 +52,6 @@ class Mssql implements Database
             echo "Error: " . $e->getMessage();
             return false;
         }
-    }
-    public function get()
-    {
-        return $this->results->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function select($table, $columns = "*", $where = null, $orderBy = null, $limit = null)
@@ -72,16 +70,21 @@ class Mssql implements Database
         if ($limit) {
             $sql .= " LIMIT $limit";
         }
-        $this->query($sql);
+        $this->query = $sql;
+        $this->execute($sql);
         return $this->get();
     }
 
+    public function get()
+    {
+        return $this->results->fetchAll(PDO::FETCH_ASSOC);
+    }
     public function insert($table, $data)
     {
         $columns = implode(",", array_keys($data));
         $values = ":" . implode(",:", array_keys($data));
         $sql = "INSERT INTO $table ($columns) VALUES ($values)";
-        $this->get($sql, $data);
+        $this->execute($sql, $data);
         return $this->results->rowCount();
     }
 
@@ -93,20 +96,25 @@ class Mssql implements Database
         }
         $set = implode(",", $set);
         $sql = "UPDATE $table SET $set WHERE $where";
-        $this->get($sql, $data);
+        $this->execute($sql, $data);
         return $this->results->rowCount();
     }
 
     public function delete($table, $where)
     {
         $sql = "DELETE FROM $table WHERE $where";
-        $this->get($sql);
+        $this->execute($sql);
         return $this->results->rowCount();
     }
 
     public function lastInsertId()
     {
         return $this->conn->lastInsertId();
+    }
+
+    public function close()
+    {
+        $this->conn = null;
     }
     public function listFields($table)
     {
@@ -131,5 +139,15 @@ class Mssql implements Database
     {
         $rec = $this->get();
         return  end($rec);
+    }
+    public function checkTableExists($table)
+    {
+        $dbname = getenv('DB_NAME');
+        $sql = "SELECT *
+            FROM INFORMATION_SCHEMA.TABLES
+            WHERE TABLE_SCHEMA = '$dbname'
+            AND TABLE_NAME = '$table'";
+        $this->execute($sql);
+        return $this->results->rowCount() > 0;
     }
 }

@@ -63,8 +63,8 @@ class Sqlite implements Database
             $sql .= " LIMIT $limit";
         }
         $this->query = $sql;
-        $this->results = $this->execute($sql);
-        return $this;
+        $this->execute($sql);
+        return $this->get();
     }
 
     public function get()
@@ -84,9 +84,9 @@ class Sqlite implements Database
     {
         $set = [];
         foreach ($data as $key => $value) {
-            $set[] = "$key = :$key";
+            $set[] = "$key=:$key";
         }
-        $set = implode(", ", $set);
+        $set = implode(",", $set);
         $sql = "UPDATE $table SET $set WHERE $where";
         $this->execute($sql, $data);
         return $this->results->rowCount();
@@ -99,26 +99,43 @@ class Sqlite implements Database
         return $this->results->rowCount();
     }
 
+    public function lastInsertId()
+    {
+        return $this->conn->lastInsertId();
+    }
+
+    public function close()
+    {
+        $this->conn = null;
+    }
     public function listFields($table)
     {
-        $sql = "PRAGMA table_info($table)";
+        $sql = "DESCRIBE $table";
+        $fields = [];
         $this->execute($sql);
-        $fields = $this->results->fetchAll(PDO::FETCH_ASSOC);
-        $result = [];
-        foreach ($fields as $field) {
-            $result[] = $field['name'];
+        $record = $this->get();
+        foreach ($record as $row) {
+            $fields[] = $row['Field'];
         }
-        return $result;
+        $this->fields = $fields;
+        return $this->fields;
     }
 
     public function first()
     {
-        return $this->results->fetch(PDO::FETCH_ASSOC);
+        $rec = $this->get();
+        return reset($rec);
     }
 
     public function last()
     {
-        $data = $this->results->fetchAll(PDO::FETCH_ASSOC);
-        return end($data);
+        $rec = $this->get();
+        return  end($rec);
+    }
+    public function checkTableExists($table)
+    {
+        $sql = "SELECT 1 FROM $table LIMIT 1";
+        $this->execute($sql);
+        return $this->results->rowCount() > 0;
     }
 }

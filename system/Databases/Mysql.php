@@ -67,8 +67,8 @@ class Mysql implements Database
             $sql .= " LIMIT $limit";
         }
         $this->query = $sql;
-        $this->results = $this->execute($sql);
-        return $this;
+        $this->execute($sql);
+        return $this->get();
     }
 
     public function get()
@@ -135,5 +135,11 @@ class Mysql implements Database
     {
         $rec = $this->get();
         return  end($rec);
+    }
+    public function checkTableExists($table)
+    {
+        $sql = "SHOW TABLES LIKE '$table'";
+        $this->query($sql);
+        return $this->results->rowCount() > 0;
     }
 }

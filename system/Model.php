@@ -12,14 +12,19 @@ class Model
     public function __construct()
     {
 
-        $dotenv = \Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
-        $dotenv->load();
-        $this->db = DatabaseFactory::create();
-        $inflector = new Inflector;
+        try {
+            $dotenv = \Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
+            $dotenv->load();
+            $this->db = DatabaseFactory::create();
+            $inflector = new Inflector;
 
-        if (get_class($this) !== "Model" && is_null($this->table)) {
-            $this->table = strtolower($inflector->tableize(get_class($this)));
-            $this->listFields();
+            if (get_class($this) !== "Model" && is_null($this->table)) {
+                $this->table = strtolower($inflector->tableize(get_class($this)));
+                $this->checkTableExists($this->table) ? $this->listFields() : throw new Exception("Table '{$this->table}' Not Found...");
+            }
+        } catch (Exception $e) {
+            // Handle the exception here, e.g., log it or display an error message
+            echo "Error: " . $e->getMessage();
         }
     }
 
@@ -57,5 +62,20 @@ class Model
     {
         $this->fields = $this->db->listFields($this->table);
         return $this->fields;
+    }
+    public function checkTableExists($table)
+    {
+        return $this->db->checkTableExists($table);
+    }
+
+    public function createTable($table, $fields)
+    {
+        $sql = "CREATE TABLE IF NOT EXISTS $table (";
+        $fieldSql = [];
+        foreach ($fields as $field => $type) {
+            $fieldSql[] = "$field $type";
+        }
+        $sql .= implode(", ", $fieldSql) . ")";
+        return $this->db->query($sql);
     }
 }
