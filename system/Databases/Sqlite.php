@@ -132,4 +132,10 @@ class Sqlite implements Database
         $rec = $this->get();
         return  end($rec);
     }
+    public function checkTableExists($table)
+    {
+        $sql = "SELECT 1 FROM $table LIMIT 1";
+        $this->execute($sql);
+        return $this->results->rowCount() > 0;
+    }
 }

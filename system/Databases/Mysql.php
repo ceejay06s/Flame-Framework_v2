@@ -136,4 +136,10 @@ class Mysql implements Database
         $rec = $this->get();
         return  end($rec);
     }
+    public function checkTableExists($table)
+    {
+        $sql = "SHOW TABLES LIKE '$table'";
+        $this->query($sql);
+        return $this->results->rowCount() > 0;
+    }
 }

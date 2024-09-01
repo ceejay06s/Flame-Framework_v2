@@ -140,4 +140,14 @@ class Mssql implements Database
         $rec = $this->get();
         return  end($rec);
     }
+    public function checkTableExists($table)
+    {
+        $dbname = getenv('DB_NAME');
+        $sql = "SELECT *
+            FROM INFORMATION_SCHEMA.TABLES
+            WHERE TABLE_SCHEMA = '$dbname'
+            AND TABLE_NAME = '$table'";
+        $this->execute($sql);
+        return $this->results->rowCount() > 0;
+    }
 }

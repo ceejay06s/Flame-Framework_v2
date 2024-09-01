@@ -157,4 +157,10 @@ class Mysqli implements Database
         $this->fields = $fields;
         return $this->fields;
     }
+    public function checkTableExists($table)
+    {
+        $sql = "SHOW TABLES LIKE '$table'";
+        $this->query($sql);
+        return count($this->get()) > 0;
+    }
 }
