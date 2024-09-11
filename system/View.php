@@ -12,7 +12,21 @@ class View
         if (empty($view)) {
             $view = $this->controller . DS . $this->method;
         }
-        require_once VIEWS_PATH . DS . $view . '.view';
+        $filename = VIEWS_PATH . DS . $view . '.view';
+        if (!file_exists($filename)) {
+            $filename = VIEWS_PATH . DS . $view . '.blade.php';
+        }
+        if (!file_exists($filename)) {
+            $filename = VIEWS_PATH . DS . $view . '.php';
+        }
+        if (!file_exists($filename)) {
+            $filename = VIEWS_PATH . DS . $view . '.html';
+        }
+        if (file_exists($filename)) {
+            require_once $filename;
+        } else {
+            echo "View '$view' not found";
+        }
         $content = ob_get_clean();
         if ($this->layout)
             if ($return) {

@@ -1,5 +1,15 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
+  
+   
+  ErrorDocument 404 /views/error/404.html
+  ErrorDocument 500 /views/error/404.html
+  ErrorDocument 403 /views/error/404.html
+  ErrorDocument 400 /views/error/404.html
+  ErrorDocument 401 /views/error/401.html
+  ErrorDocument 405 /views/error/405.html
+
+
   RewriteBase /
   RewriteRule ^index\.php$ - [L]
   RewriteCond %{REQUEST_FILENAME} !-f

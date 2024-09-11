@@ -2,27 +2,30 @@
 
 namespace System\Config;
 
+use Exception;
+
 class Encryption
 {
     private $key;
     private $iv;
     private $method = 'aes-256-cbc';
     private $algo = 'MD5';
-    private $len;
+    private $algo_len;
+    private $iv_length;
 
     public function __construct($key, $iv, $algo = 'MD5')
     {
         $this->algo = $algo;
         $this->key = $key;
         $this->iv = $iv;
-        $this->len = strlen(hash_hmac($this->algo, rand(),  $this->iv, true));
+        $this->algo_len = strlen(hash_hmac($this->algo, rand(),  $this->iv, true));
+        $this->iv_length = openssl_cipher_iv_length($this->method);
     }
 
 
     public function encrypt($data)
     {
-        $iv_length = openssl_cipher_iv_length($this->method);
-        $iv = openssl_random_pseudo_bytes($iv_length);
+        $iv = openssl_random_pseudo_bytes($this->iv_length);
         $encrypt = openssl_encrypt($data, $this->method, $this->key, OPENSSL_RAW_DATA, $iv);
         $hash = hash_hmac($this->algo, $encrypt, $this->iv, true);
         return base64_encode($iv . $hash . $encrypt);
@@ -31,25 +34,28 @@ class Encryption
     public function decrypt($data)
     {
         $mix = base64_decode($data);
-        $iv_length = openssl_cipher_iv_length($this->method);
-        $iv = substr($mix, 0, $iv_length);
-        $hash = substr($mix, $iv_length, $this->len);
-        $encrypt = substr($mix, $iv_length + $this->len);
+        $iv = substr($mix, 0, $this->iv_length);
+        $hash = substr($mix, $this->iv_length, $this->algo_len);
+        $encrypt = substr($mix, $this->iv_length + $this->algo_len);
 
-        $data = openssl_decrypt($encrypt, $this->method, $this->key, OPENSSL_RAW_DATA, $iv);
+        $decrypted_data = openssl_decrypt($encrypt, $this->method, $this->key, OPENSSL_RAW_DATA, $iv);
         $rehash = hash_hmac($this->algo, $encrypt, $this->iv, true);
         if (hash_equals($hash, $rehash)) {
-            return $data;
+            return $decrypted_data;
         }
         return false;
     }
 
-    public function toHex($data)
+    public function toHex($bin)
     {
-        return bin2hex($data);
+        return bin2hex($bin);
     }
-    public function toBin($data)
+    public function isHex($hex_code)
     {
-        return hex2bin($data);
+        return @preg_match("/^[a-f0-9]{2,}$/i", $hex_code) && !(strlen($hex_code) & 1);
+    }
+    public function toBin($hex)
+    {
+        return hex2bin($hex);
     }
 }

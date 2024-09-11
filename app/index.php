@@ -10,6 +10,7 @@ define('DATABASE_PATH', CONFIG_PATH . '/database.php');
 define('PUBLIC_PATH', ROOT_PATH . '/public');
 define('VIEWS_PATH', APP_PATH . '/views');
 define('CONTROLLERS_PATH', APP_PATH . '/controllers');
+define('SYSTEM_CONTROLLERS_PATH', SYSTEM . '/controllers');
 define('MODELS_PATH', APP_PATH . '/models');
 define('ASSETS_PATH', PUBLIC_PATH . '/assets');
 define('UPLOADS_PATH', PUBLIC_PATH . '/uploads');
@@ -21,7 +22,11 @@ spl_autoload_register(function ($class) {
     $file = str_replace('\\', DS, $class) . '.php';
     if (file_exists(CONTROLLERS_PATH . DS . $file)) {
         require_once CONTROLLERS_PATH . DS . $file;
+    } else if (file_exists(SYSTEM . DS . "controllers" . DS . $file)) {
+        require_once SYSTEM . DS . "controllers" . DS . $file;
     }
+
+
 
     if (file_exists(SYSTEM . DS . 'config/' . $file)) {
         require_once SYSTEM . DS . 'config/' . $file;
@@ -37,6 +42,8 @@ spl_autoload_register(function ($class) {
         require_once SYSTEM . DS . $file;
     }
 });
+require_once(ROOT_PATH . DS . 'vendor' . DS . '/bshaffer/oauth2-server-php/src/OAuth2/Autoloader.php');
+OAuth2\Autoloader::register();
 
 use Dotenv\Dotenv;
 
@@ -45,5 +52,7 @@ $dotenv->load();
 foreach ($_ENV as $key => $value) {
     putenv("$key=$value");
 }
+
+$session = new System\Config\Session;
 $router = new Router;
 // $Router = new Router();

@@ -4,8 +4,11 @@ class Controller
 {
     public $layout = 'default';
     private $view;
-    function __construct()
+    public $session;
+    public function __construct()
     {
+        global $session;
+        $this->session = $session;
         $this->view = new View;
     }
     public function render($render = null, $data = [])

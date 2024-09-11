@@ -1,2 +1,2 @@
 <?php
-$router['/'] = ['controller' => 'HomeController', 'method' => 'index', 'params' => [], 'plugins' => ''];
+$router['/'] = ['controller' => 'HomeController', 'method' => 'index', 'params' => [], 'action' => 'GET'];
