@@ -60,7 +60,7 @@ class Router
             die;
         } */
 
-        $controllerClass = ucfirst($this->controller) . (str_contains($this->controller, 'Controller') ? '' : 'Controller');
+        $controllerClass = ucfirst($this->controller ?? '') . (str_contains($this->controller ?? '', 'Controller') ? '' : 'Controller');
         $controllerFile = CONTROLLERS_PATH . DS . $controllerClass . '.php';
         if (!file_exists($controllerFile)) {
             $controllerFile = SYSTEM_CONTROLLERS_PATH . DS . $controllerClass . '.php';
