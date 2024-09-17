@@ -15,11 +15,11 @@ class Oauth2Controller extends Controller
     {
         $request = Request::createFromGlobals();
         $response = $this->server->handleRequest($request);
-        $statusCode = $response->getstatusCode();
+        $statusCode = $response->getStatusCode();
         if ($statusCode != 200) {
             http_response_code($statusCode);
             include_once VIEWS_PATH . DS . "error/{$statusCode}.html";
-            // die;
+            die;
         }
         $response->send();
     }

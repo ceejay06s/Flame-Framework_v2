@@ -14,6 +14,10 @@ class View
         }
         $filename = VIEWS_PATH . DS . $view . '.view';
         if (!file_exists($filename)) {
+            $filename = VIEWS_PATH . DS . str_replace('.', DS, $view) . '.view';
+            $filename = VIEWS_PATH . DS . $view . '.view';
+        }
+        if (!file_exists($filename)) {
             $filename = VIEWS_PATH . DS . $view . '.blade.php';
         }
         if (!file_exists($filename)) {

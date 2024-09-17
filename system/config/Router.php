@@ -13,13 +13,13 @@ class Router
         global $router, $session;
         $this->session = $session;
         $this->router = $router;
-        $this->router['/oauth/token'] = ['controller' => 'Oauth2Controller', 'method' => 'token', 'action' => 'POST'];
-        $this->router['/oauth/authorize'] = ['controller' => 'Oauth2Controller', 'method' => 'authorize', 'action' => 'ANY'];
+        $this->router['api/oauth/token'] = ['controller' => 'Oauth2Controller', 'method' => 'token', 'action' => 'POST'];
+        $this->router['api/oauth/authorize'] = ['controller' => 'Oauth2Controller', 'method' => 'authorize', 'action' => 'ANY'];
         $url = parse_url($_SERVER['REQUEST_URI']);
         $path = trim($url['path'], '/');
-        $params = explode('/', $path);;
+        $params = explode('/', $path);
         $url = (empty($params[0])) ? "/" : "/{$params[0]}";
-        $url .= (empty($params[1])) ? (empty($params[0]) ? "" : '/index') : "/{$params[1]}";
+        $url .= (empty($params[1])) ? "" : "/{$params[1]}";
         $route = $this->getRoute($url);
         if ($route) {
             $this->controller = $route['controller'];
@@ -34,7 +34,6 @@ class Router
                 die();
             }
         } else {
-
             $params[1] = $params[1] ?? 'index';
             $this->controller = isset($params[0]) && file_exists(CONTROLLERS_PATH . '/' . $params[0] . 'Controller.php') ? $params[0] : null;
             $this->method = isset($params[1]) && method_exists(ucfirst($this->controller) . "Controller", $params[1]) ? $params[1] : null;
@@ -45,28 +44,31 @@ class Router
 
     private function getRoute($path)
     {
+        $path = strtoupper($path);
+        $this->router = array_change_key_case((array)$this->router, MB_CASE_TITLE);
+
         if (isset($this->router[$path])) {
             return $this->router[$path];
+        } elseif (isset($this->router[$path . '/index'])) {
+            return $this->router[$path . '/index'];
         }
         return false;
     }
 
     private function dispatch()
     {
-        /* if (is_null($this->controller) || is_null($this->method)) {
-            header('HTTP/1.1 404 Not Found');
-            ob_clean();
-            include_once VIEWS_PATH . DS . "error/404.html";
-            die;
-        } */
 
-        $controllerClass = ucfirst($this->controller ?? '') . (str_contains($this->controller ?? '', 'Controller') ? '' : 'Controller');
+
+        $controllerClass = ucfirst($this->controller ?? '');
+        $controllerClass .= str_contains($controllerClass, "Controller") ? '' : 'Controller';
+
         $controllerFile = CONTROLLERS_PATH . DS . $controllerClass . '.php';
         if (!file_exists($controllerFile)) {
             $controllerFile = SYSTEM_CONTROLLERS_PATH . DS . $controllerClass . '.php';
         }
         if (file_exists($controllerFile)) {
             require_once $controllerFile;
+
 
             $controllerInstance = new $controllerClass();
 

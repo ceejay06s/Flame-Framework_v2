@@ -13,6 +13,8 @@
     "require": {
         "vlucas/phpdotenv": "^5.6",
         "doctrine/inflector": "^2.0",
-        "bshaffer/oauth2-server-php": "1.10"
+        "bshaffer/oauth2-server-php": "1.10",
+        "minishlink/web-push": "^9.0",
+        "acmephp/ssl": "^2.1"
     }
 }

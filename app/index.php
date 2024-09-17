@@ -1,5 +1,6 @@
 <?php
-define('BASE_URL', $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . str_replace('/index.php', '', $_SERVER['PHP_SELF']));
+// var_dump($_SERVER);
+// define('BASE_URL', $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . str_replace('/index.php', '', $_SERVER['PHP_SELF']));
 
 define('DS', DIRECTORY_SEPARATOR);
 define('ROOT_PATH', dirname(__DIR__));
@@ -24,21 +25,13 @@ spl_autoload_register(function ($class) {
         require_once CONTROLLERS_PATH . DS . $file;
     } else if (file_exists(SYSTEM . DS . "controllers" . DS . $file)) {
         require_once SYSTEM . DS . "controllers" . DS . $file;
-    }
-
-
-
-    if (file_exists(SYSTEM . DS . 'config/' . $file)) {
+    } elseif (file_exists(SYSTEM . DS . 'config/' . $file)) {
         require_once SYSTEM . DS . 'config/' . $file;
-    }
-    if (file_exists(SYSTEM . DS . 'database/' . $file)) {
+    } elseif (file_exists(SYSTEM . DS . 'database/' . $file)) {
         require_once SYSTEM . DS . 'database/' . "System\Databases\\" . $file;
-    }
-    if (file_exists(MODELS_PATH . DS . $file)) {
+    } elseif (file_exists(MODELS_PATH . DS . $file)) {
         require_once MODELS_PATH . DS . $file;
-    }
-
-    if (file_exists(SYSTEM . DS . $file)) {
+    } elseif (file_exists(SYSTEM . DS . $file)) {
         require_once SYSTEM . DS . $file;
     }
 });

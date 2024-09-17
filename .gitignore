@@ -1,3 +1,4 @@
 vendor/
 app/tmp/sessions
 app/tmp/logs
+node_modules

@@ -60,7 +60,7 @@ class OAuth2
         $request = $request ?? Request::createFromGlobals();
         // var_dump($request);
         $response =  $this->server->handleTokenRequest($request);
-        $statusCode = $response->getstatusCode();
+        $statusCode = $response->getStatusCode();
         if ($statusCode != 200) {
             http_response_code($statusCode);
             include_once VIEWS_PATH . DS . "error/{$statusCode}.html";

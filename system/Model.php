@@ -1,5 +1,5 @@
 <?php
-
+#[\AllowDynamicProperties]
 class Model
 {
     private $db;
@@ -33,8 +33,9 @@ class Model
         return $this->db->query($sql, $params);
     }
 
-    public function select($table, $column = '*', $conditions = '', $orderBy = '', $limit = '')
+    public function select($column = '*', $conditions = '', $orderBy = '', $limit = '', $table = null)
     {
+        $table = is_null($table) ? $this->table : $table;
         return $this->db->select($table, $column, $conditions, $orderBy, $limit);
     }
 
@@ -44,12 +45,14 @@ class Model
         return $result ? $result[0] : null;
     }
 
-    public function insert($table, $data)
+    public function insert($data, $table = null)
     {
+        $table = is_null($table) ? $this->table : $table;
+
         return $this->db->insert($table, $data);
     }
 
-    public function update($table, $data, $where)
+    public function update($data, $where, $table)
     {
         return $this->db->update($table, $data, $where);
     }
