@@ -6,16 +6,16 @@ class UserController extends Controller
     var $uses = ['user'];
     public function login()
     {
-        $user = new stdClass;
-        $user->username = $this->request->post('email');
-        $user->password = $this->request->post('password');
-        // $user = (array) $user;
 
-        $user =  $this->User->select('*', "username='{$user->username}' limit 1");
-        $user = ((object)reset($user));
-        $user->password = $this->encrypt->decrypt($user->password);
+        $user = $this->request->post();
+        var_dump(($user));
+        if (!empty($user)) {
+            $user = $this->User->select('*', "username='{$user['email']}' limit 1");
+            var_dump(($user));
+            $user['password'] = $this->encrypt->decrypt($user['password']);
+        }
         // 
-        var_dump(($user->password));
+
         return $this->render('users/login');
     }
 
